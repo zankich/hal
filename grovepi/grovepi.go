@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	gpiodriver "golang.org/x/exp/io/gpio/driver"
+	gpiodriver "github.com/goiot/exp/gpio/driver"
 	"golang.org/x/exp/io/i2c"
 	"golang.org/x/exp/io/i2c/driver"
 )
