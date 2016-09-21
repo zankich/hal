@@ -67,6 +67,20 @@ func (g *GrovePI) Open() (gpiodriver.Conn, error) {
 // Value returns the value of the pin. 0 for low values, 1 for high.
 func (g *GrovePI) Value(pin string) (int, error) { return 0, nil }
 
+// GetValue gets the value of the pin. 0 for low values, 1 for high.
+func (g *GrovePI) GetValue(pin string) (int, error) {
+	if err := g.Conn.Write([]byte{1, digitalRead, byte(pinMap[pin]), 0, 0}); err != nil {
+		return 0, err
+	}
+	time.Sleep(100 * time.Millisecond)
+	buf := make([]byte, 1)
+	if err := g.Conn.ReadReg(1, buf); err != nil {
+		return 0, err
+	}
+
+	return int(buf[0]), nil
+}
+
 // SetValue sets the value of the pin. 0 for low values, 1 for high.
 func (g *GrovePI) SetValue(pin string, v int) error {
 	if !strings.HasPrefix(pin, "D") {
