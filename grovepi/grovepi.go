@@ -1,6 +1,7 @@
 package grovepi
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -95,6 +96,27 @@ func (g *GrovePI) SetValue(pin string, v int) error {
 	if err := g.Conn.Write([]byte{1, digitalWrite, byte(pinMap[pin]), byte(v), 0}); err != nil {
 		return err
 	}
+	time.Sleep(100 * time.Millisecond)
+
+	return nil
+}
+
+// SetPWMValue sets the value of the pin. Value must be 0-255. Pin must be D3, D5, or D6
+func (g *GrovePI) SetPWMValue(pin string, v int) error {
+	if pin != "D3" && pin != "D5" && pin != "D6" {
+		return errors.New("pin must be D3, D5, or D6")
+	}
+
+	if err := g.Conn.Write([]byte{1, pinMode, byte(pinMap[pin]), 1, 0}); err != nil {
+		return fmt.Errorf("set pin mode failure: %v", err)
+	}
+
+	time.Sleep(100 * time.Millisecond)
+
+	if err := g.Conn.Write([]byte{1, analogWrite, byte(pinMap[pin]), byte(v), 0}); err != nil {
+		return fmt.Errorf("write value failure: %v", err)
+	}
+
 	time.Sleep(100 * time.Millisecond)
 
 	return nil
